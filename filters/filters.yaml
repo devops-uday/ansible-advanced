@@ -6,3 +6,7 @@
   - name: convert into upper case
     debug:
       msg: "hello {{NAME | upper}}"
+
+  - name: convert into lower case
+    debug:
+      msg: "hello {{NAME | lower}}"
