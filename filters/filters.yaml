@@ -10,3 +10,7 @@
   - name: convert into lower case
     debug:
       msg: "hello {{NAME | lower}}"
+
+  - name: printing undefined variable
+    debug:
+      msg: "course is {{COURSE | defalut(devops)}}"
