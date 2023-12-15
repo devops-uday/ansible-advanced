@@ -2,6 +2,7 @@
   hosts: localhost
   vars: 
     NAME: Udaykiran Yemineni
+    website: https://github.com/devops-uday/ansible-advanced
   tasks:
   - name: convert into upper case
     debug:
@@ -14,3 +15,7 @@
   - name: printing undefined variable
     debug:
       msg: "course is {{COURSE | default('Devops')}}"
+
+  - name: extract hostname
+    debug:
+      msg: "hostname is {{website | urlsplit('hostname')}}"
