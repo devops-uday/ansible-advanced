@@ -1,0 +1,8 @@
+- name: demo on filters
+  hosts: localhost
+  vars: 
+    NAME: Udaykiran Yemineni
+  tasks:
+  - name: convert into upper case
+    debug:
+      msg: "hello {{NAME | upper}}"
