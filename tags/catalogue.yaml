@@ -3,79 +3,111 @@
   become: yes
   tasks:
   - name: setup NPM source
+    tags:
+    - installation
     ansible.builtin.shell: "curl -sL https://rpm.nodesource.com/setup_lts.x | bash"
 
   - name: install NodeJS
+    tags:
+    - installation
     ansible.builtin.yum: 
       name: nodejs 
       state: installed
 
   - name: check the roboshop user exist or not
+    tags:
+    - installation
     ansible.builtin.command: id roboshop
     register: output #output is variable name
     ignore_errors: true
 
   - name: create user roboshop
+    tags:
+    - installation
     become: yes #we need sudo access for this task only
     ansible.builtin.user:
       name: roboshop
     when: output.rc != 0    
 
   - name: check app directory exist or not
+    tags:
+    - installation
     ansible.builtin.stat:
      path: /app
     register: directory
 
   - name: print the directory stats
+    tags:
+    -  installation
     ansible.builtin.debug:
      msg: "output is {{directory}}"
 
   - when: directory.stat.exists == False
+    tags:
+    - installation
     name: create /app directory
     ansible.builtin.file:
      path: /app
      state: directory
 
   - name: download catalogue artifact
+    tags:
+    - deployment
     ansible.builtin.get_url:
      url: https://roboshop-builds.s3.amazonaws.com/catalogue.zip
      dest: /tmp
 
 
   - name: extract catalogue artifact
+    tags:
+    - deployment
     ansible.builtin.unarchive:
       src: /tmp/catalogue.zip
       dest: /app
       remote_src: yes
 
   - name: install dependencies
+    tags:
+    - deployment
     ansible.builtin.command: npm install
     args:
       chdir: /app
 
   - name: copy catalogue service
+    tags:
+    - installation
     ansible.builtin.copy:
       src: catalogue.service
       dest: /etc/systemd/system/catalogue.service
 
   - name: deamon reload
+    tags:
+    - installation
     ansible.builtin.systemd:
       daemon_reload: true
 
   - name: copy mongo to yum.repos.d
+    tags:
+    - installation
     ansible.builtin.copy:
       src: mongodb.repo
       dest: /etc/yum.repos.d/mongo.repo
 
   - name: install mongodb client
+    tags:
+    - installation
     ansible.builtin.yum:
       name: mongodb-org-shell
       state: installed
 
   - name: load catalogue data
+    tags:
+    - installation
     ansible.builtin.command: mongo --host mongodb.devopsuday.online < /app/schema/catalogue.js
 
   - name: restart catalogue
+    tags:
+    - deployment
     ansible.builtin.service:
       name: catalogue
       state: restarted
